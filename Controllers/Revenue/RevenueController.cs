@@ -1,5 +1,6 @@
 ﻿using EFinnance.API.ViewModels.Category;
 using EFinnance.API.ViewModels.Revenue;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,6 +9,7 @@ namespace EFinnance.API.Controllers.Revenue
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] 
     public class RevenueController : ControllerBase
     {
         private readonly AppDbContext _context;

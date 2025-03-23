@@ -2,12 +2,12 @@
 using EFinnance.API.ViewModels.Expense;
 using EFinnance.API.ViewModels.Revenue;
 using EFinnance.API.ViewModels.User;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<UserViewModel>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
     public DbSet<UserViewModel> Users { get; set; }
     public DbSet<CategoryViewModel> Categories { get; set; }
     public DbSet<RevenueViewModel> Revenues { get; set; }

@@ -1,4 +1,5 @@
 ﻿using EFinnance.API.ViewModels.Expense;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,6 +8,7 @@ namespace EFinnance.API.Controllers.Expense
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] 
     public class ExpenseController : ControllerBase
     {
             private readonly AppDbContext _context;

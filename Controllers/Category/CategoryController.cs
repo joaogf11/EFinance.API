@@ -1,4 +1,5 @@
 ﻿using EFinnance.API.ViewModels.Category;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,6 +8,7 @@ namespace EFinnance.API.Controllers.Category
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] 
     public class CategoryController : ControllerBase
     {
         private readonly AppDbContext _context;
