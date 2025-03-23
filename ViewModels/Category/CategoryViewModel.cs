@@ -1,4 +1,6 @@
-﻿using EFinnance.API.ViewModels.User;
+﻿using EFinnance.API.ViewModels.Expense;
+using EFinnance.API.ViewModels.Revenue;
+using EFinnance.API.ViewModels.User;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,7 +23,7 @@ namespace EFinnance.API.ViewModels.Category
         public int UserId { get; set; }
         public UserViewModel User { get; set; }
 
-        public ICollection<Revenue> Revenues { get; set; }
-        public ICollection<Expense> Expenses { get; set; }
+        public ICollection<RevenueViewModel> Revenues { get; set; }
+        public ICollection<ExpenseViewModel> Expenses { get; set; }
     }
 }

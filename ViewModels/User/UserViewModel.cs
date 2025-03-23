@@ -1,4 +1,6 @@
 ﻿using EFinnance.API.ViewModels.Category;
+using EFinnance.API.ViewModels.Expense;
+using EFinnance.API.ViewModels.Revenue;
 using System.ComponentModel.DataAnnotations;
 
 namespace EFinnance.API.ViewModels.User
