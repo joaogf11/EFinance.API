@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace EFinnance.API.Controllers.Category
 {
-    [Route("api/[controller]")]
+    [Route("api/category")]
     [ApiController]
     [Authorize] 
     public class CategoryController : ControllerBase
@@ -18,18 +19,22 @@ namespace EFinnance.API.Controllers.Category
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet("get-category")]
         public async Task<ActionResult<IEnumerable<CategoryViewModel>>> GetCategories()
         {
+            var category = await _context.Categories.FindAsync();
+            if (category == null)
+                return NotFound();
+
             return await _context.Categories.ToListAsync();
         }
 
-        [HttpPost]
+        [HttpPost("new-category")]
         public async Task<ActionResult<CategoryViewModel>> CreateCategory(CategoryViewModel category)
         {
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetCategories), new { id = category.Id }, category);
+            return Ok(new{ category.Id });
         }
     }
 }

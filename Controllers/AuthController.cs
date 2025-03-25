@@ -1,4 +1,5 @@
-﻿using EFinnance.API.ViewModels.User;
+﻿using EFinnance.API;
+using EFinnance.API.ViewModels.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -55,20 +56,28 @@ public class AuthController : ControllerBase
     }
 
     private string GenerateJwtToken(UserViewModel user)
+{
+    var key = Encoding.UTF8.GetBytes("X7z!r9G@t2L#pD5mV8c*KqYs&fN4wZJb");
+    
+    var claims = new List<Claim>
     {
-        var key = Encoding.UTF8.GetBytes("X7z!r9G@t2L#pD5mV8c*KqYs&fN4wZJb");
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
-        };
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
+    };
 
-        var token = new JwtSecurityToken(
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
-            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-        );
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(claims),
+        Expires = DateTime.UtcNow.AddHours(2),
+        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
+        Issuer = "EFinnanceAPI",
+        Audience = "EFinnanceClient"
+    };
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    
+    return tokenHandler.WriteToken(token);
+}
+
 }

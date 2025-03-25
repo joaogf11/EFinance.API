@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,17 +10,20 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFinnance.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250324223756_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
             modelBuilder.Entity("EFinnance.API.ViewModels.Category.CategoryViewModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -44,12 +48,12 @@ namespace EFinnance.API.Migrations
 
             modelBuilder.Entity("EFinnance.API.ViewModels.Expense.ExpenseViewModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("CategoryId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("TEXT");
@@ -72,12 +76,12 @@ namespace EFinnance.API.Migrations
 
             modelBuilder.Entity("EFinnance.API.ViewModels.Revenue.RevenueViewModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("CategoryId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -312,7 +316,7 @@ namespace EFinnance.API.Migrations
             modelBuilder.Entity("EFinnance.API.ViewModels.Expense.ExpenseViewModel", b =>
                 {
                     b.HasOne("EFinnance.API.ViewModels.Category.CategoryViewModel", "Category")
-                        .WithMany()
+                        .WithMany("Expenses")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -331,7 +335,7 @@ namespace EFinnance.API.Migrations
             modelBuilder.Entity("EFinnance.API.ViewModels.Revenue.RevenueViewModel", b =>
                 {
                     b.HasOne("EFinnance.API.ViewModels.Category.CategoryViewModel", "Category")
-                        .WithMany()
+                        .WithMany("Revenues")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -396,6 +400,13 @@ namespace EFinnance.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EFinnance.API.ViewModels.Category.CategoryViewModel", b =>
+                {
+                    b.Navigation("Expenses");
+
+                    b.Navigation("Revenues");
                 });
 
             modelBuilder.Entity("EFinnance.API.ViewModels.User.UserViewModel", b =>

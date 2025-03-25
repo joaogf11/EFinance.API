@@ -28,19 +28,10 @@ public class AppDbContext : IdentityDbContext<UserViewModel>
             .WithMany(u => u.Revenues)
             .HasForeignKey(r => r.UserId);
 
-        modelBuilder.Entity<RevenueViewModel>()
-            .HasOne(r => r.Category)
-            .WithMany(c => c.Revenues)
-            .HasForeignKey(r => r.CategoryId);
-
         modelBuilder.Entity<ExpenseViewModel>()
             .HasOne(e => e.User)
             .WithMany(u => u.Expenses)
             .HasForeignKey(e => e.UserId);
 
-        modelBuilder.Entity<ExpenseViewModel>()
-            .HasOne(e => e.Category)
-            .WithMany(c => c.Expenses)
-            .HasForeignKey(e => e.CategoryId);
     }
 }

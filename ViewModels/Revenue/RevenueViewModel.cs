@@ -2,13 +2,16 @@
 using EFinnance.API.ViewModels.User;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EFinnance.API.ViewModels.Revenue
 {
     public class RevenueViewModel
     {
         [Key]
-        public int Id { get; set; }
+        [JsonIgnore] 
+
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [Required]
         public decimal Salary { get; set; }
@@ -23,11 +26,15 @@ namespace EFinnance.API.ViewModels.Revenue
         public DateTime IncomeDate { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("Category")]
-        public int CategoryId { get; set; }
+        public string CategoryId { get; set; }
+
+        [JsonIgnore]
         public CategoryViewModel Category { get; set; }
 
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
+        
+        [JsonIgnore] 
         public UserViewModel User { get; set; }
 
         public string FormatarData()

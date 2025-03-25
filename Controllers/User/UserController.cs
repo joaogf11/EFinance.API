@@ -1,4 +1,5 @@
-﻿using EFinnance.API.ViewModels.User;
+﻿using EFinnance.API;
+using EFinnance.API.ViewModels.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -42,7 +43,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, UserViewModel user)
+    public async Task<IActionResult> UpdateUser(string id, UserViewModel user)
     {
         if (id != user.Id)
             return BadRequest();
@@ -53,7 +54,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id)
+    public async Task<IActionResult> DeleteUser(string id)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null)

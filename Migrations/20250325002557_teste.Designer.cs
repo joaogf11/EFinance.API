@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,14 +10,16 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFinnance.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250325002557_teste")]
+    partial class teste
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
-            modelBuilder.Entity("EFinnance.API.ViewModels.Category.CategoryViewModel", b =>
+            modelBuilder.Entity("EFinnance.API.Category", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -42,7 +45,7 @@ namespace EFinnance.API.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("EFinnance.API.ViewModels.Expense.ExpenseViewModel", b =>
+            modelBuilder.Entity("EFinnance.API.Expense", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -70,7 +73,7 @@ namespace EFinnance.API.Migrations
                     b.ToTable("Expenses");
                 });
 
-            modelBuilder.Entity("EFinnance.API.ViewModels.Revenue.RevenueViewModel", b =>
+            modelBuilder.Entity("EFinnance.API.Revenue", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -81,7 +84,6 @@ namespace EFinnance.API.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(80)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("IncomeDate")
@@ -106,7 +108,7 @@ namespace EFinnance.API.Migrations
                     b.ToTable("Revenues");
                 });
 
-            modelBuilder.Entity("EFinnance.API.ViewModels.User.UserViewModel", b =>
+            modelBuilder.Entity("EFinnance.API.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -298,9 +300,9 @@ namespace EFinnance.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("EFinnance.API.ViewModels.Category.CategoryViewModel", b =>
+            modelBuilder.Entity("EFinnance.API.Category", b =>
                 {
-                    b.HasOne("EFinnance.API.ViewModels.User.UserViewModel", "User")
+                    b.HasOne("EFinnance.API.User", "User")
                         .WithMany("Categories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -309,15 +311,15 @@ namespace EFinnance.API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EFinnance.API.ViewModels.Expense.ExpenseViewModel", b =>
+            modelBuilder.Entity("EFinnance.API.Expense", b =>
                 {
-                    b.HasOne("EFinnance.API.ViewModels.Category.CategoryViewModel", "Category")
-                        .WithMany()
+                    b.HasOne("EFinnance.API.Category", "Category")
+                        .WithMany("Expenses")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EFinnance.API.ViewModels.User.UserViewModel", "User")
+                    b.HasOne("EFinnance.API.User", "User")
                         .WithMany("Expenses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -328,15 +330,15 @@ namespace EFinnance.API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EFinnance.API.ViewModels.Revenue.RevenueViewModel", b =>
+            modelBuilder.Entity("EFinnance.API.Revenue", b =>
                 {
-                    b.HasOne("EFinnance.API.ViewModels.Category.CategoryViewModel", "Category")
+                    b.HasOne("EFinnance.API.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EFinnance.API.ViewModels.User.UserViewModel", "User")
+                    b.HasOne("EFinnance.API.User", "User")
                         .WithMany("Revenues")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -358,7 +360,7 @@ namespace EFinnance.API.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("EFinnance.API.ViewModels.User.UserViewModel", null)
+                    b.HasOne("EFinnance.API.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -367,7 +369,7 @@ namespace EFinnance.API.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("EFinnance.API.ViewModels.User.UserViewModel", null)
+                    b.HasOne("EFinnance.API.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -382,7 +384,7 @@ namespace EFinnance.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EFinnance.API.ViewModels.User.UserViewModel", null)
+                    b.HasOne("EFinnance.API.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -391,14 +393,19 @@ namespace EFinnance.API.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("EFinnance.API.ViewModels.User.UserViewModel", null)
+                    b.HasOne("EFinnance.API.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EFinnance.API.ViewModels.User.UserViewModel", b =>
+            modelBuilder.Entity("EFinnance.API.Category", b =>
+                {
+                    b.Navigation("Expenses");
+                });
+
+            modelBuilder.Entity("EFinnance.API.User", b =>
                 {
                     b.Navigation("Categories");
 

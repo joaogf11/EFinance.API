@@ -3,13 +3,15 @@ using EFinnance.API.ViewModels.Revenue;
 using EFinnance.API.ViewModels.User;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EFinnance.API.ViewModels.Category
 {
     public class CategoryViewModel
     {
         [Key]
-        public int Id { get; set; }
+        [JsonIgnore] 
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [Required]
         [StringLength(50)]
@@ -20,10 +22,10 @@ namespace EFinnance.API.ViewModels.Category
         public string Description { get; set; }
 
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
+        
+        [JsonIgnore] 
         public UserViewModel User { get; set; }
 
-        public ICollection<RevenueViewModel> Revenues { get; set; }
-        public ICollection<ExpenseViewModel> Expenses { get; set; }
     }
 }
