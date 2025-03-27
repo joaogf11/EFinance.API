@@ -9,7 +9,7 @@ namespace EFinnance.API.ViewModels.Expense
     public class ExpenseViewModel
     {
         [Key]
-        [JsonIgnore] 
+        [JsonIgnore]
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [Required]
@@ -20,14 +20,14 @@ namespace EFinnance.API.ViewModels.Expense
 
         [ForeignKey("Category")]
         public string CategoryId { get; set; }
-        
-        [JsonIgnore] 
+
+        [JsonIgnore]
         public CategoryViewModel Category { get; set; }
 
         [ForeignKey("User")]
         public string UserId { get; set; }
-        
-        [JsonIgnore] 
+
+        [JsonIgnore]
         public UserViewModel User { get; set; }
 
         public string FormatarData()

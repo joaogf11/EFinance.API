@@ -1,45 +1,83 @@
-﻿using EFinnance.API;
+﻿using EFinnance.API.Services;
 using EFinnance.API.ViewModels.Revenue;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-[Route("api/revenue")]
-[ApiController]
-[Authorize] 
-public class RevenueController : ControllerBase
+namespace EFinnance.API.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public RevenueController(AppDbContext context)
+    [Route("api/revenue")]
+    [ApiController]
+    [Authorize]
+    public class RevenueController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        private readonly ICurrentUserService _currentUserService;
 
-    [HttpGet("get-revenue")]
-        public async Task<ActionResult<IEnumerable<RevenueViewModel>>> GetRevenues()
-    {
-        var revenues = await _context.Revenues.Include(r => r.Category).Include(r => r.User).ToListAsync();
-        
-        if (revenues == null || revenues.Count == 0)
+        public RevenueController(
+            AppDbContext context,
+            ICurrentUserService currentUserService)
         {
-            return NotFound("Nenhuma receita encontrada.");
+            _context = context;
+            _currentUserService = currentUserService;
         }
 
-        return Ok(revenues);
-    }
-
-    [HttpPost("new-revenue")]
-        public async Task<ActionResult<RevenueViewModel>> CreateRevenue(RevenueViewModel revenue)
-    {
-        var revenueEntity = new RevenueViewModel
+        [HttpGet("get-revenue")]
+        public async Task<ActionResult<IEnumerable<RevenueViewModel>>> GetRevenues()
         {
-            
-        };
+            var unauthorizedResult = this.UnauthorizedIfNoUser();
+            if (unauthorizedResult != null) return unauthorizedResult;
 
-        _context.Revenues.Add(revenueEntity);
-        await _context.SaveChangesAsync();
+            var userId = _currentUserService.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            var revenues = await _context.Revenues
+                .Where(r => r.UserId == userId)
+                .Include(r => r.Category)
+                .Select(r => new RevenueViewModel
+                {
+                    Id = r.Id,
+                    Salary = r.Salary,
+                    OtherIncomes = r.OtherIncomes,
+                    Description = r.Description,
+                    IncomeDate = r.IncomeDate,
+                    CategoryId = r.CategoryId,
+                    UserId = r.UserId
+                })
+                .ToListAsync();
 
-        return CreatedAtAction(nameof(GetRevenues), new { id = revenueEntity.Id }, revenueEntity);
+            return Ok(revenues);
+        }
+
+        [HttpPost("new-revenue")]
+        public async Task<ActionResult<RevenueViewModel>> CreateRevenue([FromBody] RevenueViewModel viewModel)
+        {
+            var unauthorizedResult = this.UnauthorizedIfNoUser();
+            if (unauthorizedResult != null) return unauthorizedResult;
+
+            var userId = _currentUserService.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var revenueEntity = new RevenueViewModel
+            {
+                Salary = viewModel.Salary,
+                OtherIncomes = viewModel.OtherIncomes,
+                Description = viewModel.Description,
+                IncomeDate = viewModel.IncomeDate,
+                CategoryId = viewModel.CategoryId,
+                UserId = userId
+            };
+
+            _context.Revenues.Add(revenueEntity);
+            await _context.SaveChangesAsync();
+
+            viewModel.Id = revenueEntity.Id;
+            return CreatedAtAction(nameof(GetRevenues), new { id = viewModel.Id }, viewModel);
+        }
     }
 }

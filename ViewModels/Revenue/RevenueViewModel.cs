@@ -9,7 +9,7 @@ namespace EFinnance.API.ViewModels.Revenue
     public class RevenueViewModel
     {
         [Key]
-        [JsonIgnore] 
+        [JsonIgnore]
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
@@ -33,8 +33,8 @@ namespace EFinnance.API.ViewModels.Revenue
 
         [ForeignKey("User")]
         public string UserId { get; set; }
-        
-        [JsonIgnore] 
+
+        [JsonIgnore]
         public UserViewModel User { get; set; }
 
         public string FormatarData()

@@ -1,10 +1,8 @@
+using EFinnance.API.Services;
 using EFinnance.API.ViewModels.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -16,28 +14,42 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var key = Encoding.ASCII.GetBytes("X7z!r9G@t2L#pD5mV8c*KqYs&fN4wZJb");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services
+    .AddIdentity<UserViewModel, IdentityRole>(options =>
     {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = true,
-            ValidIssuer = "EFinnanceAPI",
-            ValidateAudience = true,
-            ValidAudience = "EFinnanceClient"
-        };
-    });
-
-builder.Services.AddIdentity<UserViewModel, IdentityRole>()
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+    })
     .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddSignInManager<SignInManager<UserViewModel>>();
 
+// Configuração de Autenticação
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidIssuer = "EFinnanceAPI",
+        ValidateAudience = true,
+        ValidAudience = "EFinnanceClient"
+    };
+});
+
+// Adicione suporte a controllers
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -45,28 +57,20 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "EFinnance API",
         Version = "v1",
-        Description = "API para gerenciamento financeiro",
-        Contact = new OpenApiContact
-        {
-            Name = "Suporte",
-            Email = "suporte@efinnance.com"
-        }
+        Description = "API para gerenciamento financeiro"
     });
 
-    // Definição de esquema de autenticação JWT para o Swagger
-    var securityScheme = new OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Description = "Bearer {seu_token_aqui}",
-        In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
-        BearerFormat = "JWT"
-    };
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme."
+    });
 
-    c.AddSecurityDefinition("Bearer", securityScheme);
-
-    var securityRequirement = new OpenApiSecurityRequirement
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
@@ -79,24 +83,30 @@ builder.Services.AddSwaggerGen(c =>
             },
             new string[] {}
         }
-    };
-
-    c.AddSecurityRequirement(securityRequirement);
+    });
 });
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 var app = builder.Build();
 
+// Configurações do ambiente de desenvolvimento
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "EFinnance API v1");
+        c.DisplayOperationId();
+        c.DisplayRequestDuration();
+    });
 }
 
-app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
