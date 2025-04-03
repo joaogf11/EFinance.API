@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using EFinnance.API.ViewModels.User;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace EFinnance.API.Services
@@ -7,15 +9,18 @@ namespace EFinnance.API.Services
     {
         string? GetUserId();
         bool IsAuthenticated();
+        Task<UserViewModel?> GetUserByIdAsync(string userId); // Novo método
     }
 
     public class CurrentUserService : ICurrentUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly AppDbContext _context;
 
-        public CurrentUserService(IHttpContextAccessor httpContextAccessor)
+        public CurrentUserService(IHttpContextAccessor httpContextAccessor, AppDbContext context)
         {
             _httpContextAccessor = httpContextAccessor;
+            _context = context;
         }
 
         public string? GetUserId()
@@ -26,6 +31,11 @@ namespace EFinnance.API.Services
         public bool IsAuthenticated()
         {
             return _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
+        }
+
+        public async Task<UserViewModel?> GetUserByIdAsync(string userId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
     }
 

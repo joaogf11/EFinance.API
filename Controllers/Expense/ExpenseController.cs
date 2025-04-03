@@ -33,6 +33,7 @@ namespace EFinnance.API.Controllers
             {
                 return Unauthorized();
             }
+
             var expenses = await _context.Expenses
                 .Where(e => e.UserId == userId)
                 .Include(e => e.Category)
@@ -60,12 +61,20 @@ namespace EFinnance.API.Controllers
             {
                 return Unauthorized();
             }
+
+            var user = await _currentUserService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("Usuario não encontrado");
+            }
+
             var expenseEntity = new ExpenseViewModel
             {
                 Value = viewModel.Value,
                 DueDate = viewModel.DueDate,
                 CategoryId = viewModel.CategoryId,
-                UserId = userId
+                UserId = userId,
+                User = user
             };
 
             _context.Expenses.Add(expenseEntity);

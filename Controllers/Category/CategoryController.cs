@@ -33,6 +33,7 @@ namespace EFinnance.API.Controllers.Category
             {
                 return Unauthorized();
             }
+
             var categories = await _context.Categories
                 .Where(c => c.UserId == userId)
                 .Include(c => c.User)
@@ -40,7 +41,8 @@ namespace EFinnance.API.Controllers.Category
                 {
                     Id = c.Id,
                     Title = c.Title,
-                    UserId = c.UserId
+                    UserId = c.UserId,
+                    User = c.User
                 })
                 .ToListAsync();
 
@@ -58,10 +60,18 @@ namespace EFinnance.API.Controllers.Category
             {
                 return Unauthorized();
             }
+
+            var user = await _currentUserService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("Usuario não encontrado");
+            }
+
             var categoryEntity = new CategoryViewModel
             {
                 Title = category.Title,
-                UserId = userId
+                UserId = userId,
+                User = user
             };
 
             _context.Categories.Add(categoryEntity);
