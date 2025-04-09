@@ -87,5 +87,36 @@ namespace EFinnance.API.Controllers
             viewModel.Id = revenueEntity.Id;
             return CreatedAtAction(nameof(GetRevenues), new { id = viewModel.Id }, viewModel);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRevenue(string id, [FromBody] RevenueViewModel revenue)
+        {
+            var unauthorizedResult = this.UnauthorizedIfNoUser();
+            if (unauthorizedResult != null) return unauthorizedResult;
+
+            if (id != revenue.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(revenue).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRevenue(string id)
+        {
+            var unauthorizedResult = this.UnauthorizedIfNoUser();
+            if (unauthorizedResult != null) return unauthorizedResult;
+
+            var revenue = await _context.Revenues.FindAsync(id);
+            if (revenue == null)
+                return NotFound();
+
+            _context.Revenues.Remove(revenue);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }

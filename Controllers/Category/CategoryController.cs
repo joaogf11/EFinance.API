@@ -41,6 +41,7 @@ namespace EFinnance.API.Controllers.Category
                 {
                     Id = c.Id,
                     Title = c.Title,
+                    Description = c.Description,
                     UserId = c.UserId,
                     User = c.User
                 })
@@ -70,6 +71,7 @@ namespace EFinnance.API.Controllers.Category
             var categoryEntity = new CategoryViewModel
             {
                 Title = category.Title,
+                Description = category.Description,
                 UserId = userId,
                 User = user
             };
@@ -78,6 +80,48 @@ namespace EFinnance.API.Controllers.Category
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetCategories), new { id = categoryEntity.Id }, categoryEntity);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategory(string id, [FromBody] CategoryViewModel category)
+        {
+            var unauthorizedResult = this.UnauthorizedIfNoUser();
+            if (unauthorizedResult != null) return unauthorizedResult;
+
+            if (id != category.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(category).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategory(string id)
+        {
+            var unauthorizedResult = this.UnauthorizedIfNoUser();
+            if (unauthorizedResult != null) return unauthorizedResult;
+
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            var hasExpenses = await _context.Expenses.AnyAsync(e => e.CategoryId == id);
+            var hasRevenues = await _context.Revenues.AnyAsync(r => r.CategoryId == id);
+
+            if (hasExpenses || hasRevenues)
+            {
+                return BadRequest("Cannot delete category with associated expenses or revenues");
+            }
+
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
