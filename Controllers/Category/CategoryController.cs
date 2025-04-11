@@ -34,6 +34,12 @@ namespace EFinnance.API.Controllers.Category
                 return Unauthorized();
             }
 
+            var user = await _currentUserService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("Usuario não encontrado");
+            }
+
             var categories = await _context.Categories
                 .Where(c => c.UserId == userId)
                 .Include(c => c.User)
@@ -42,12 +48,12 @@ namespace EFinnance.API.Controllers.Category
                     Id = c.Id,
                     Title = c.Title,
                     Description = c.Description,
-                    UserId = c.UserId,
-                    User = c.User
+                    UserId = userId,
+                    User = user
                 })
                 .ToListAsync();
 
-            return Ok(categories);
+            return Ok($"{categories.Select(s=>s.Id)}, {categories}");
         }
 
         [HttpPost("new-category")]
