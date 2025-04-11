@@ -20,10 +20,9 @@ namespace EFinnance.API.ViewModels.Category
         public string Description { get; set; }
 
         [ForeignKey("User")]
-        public string UserId { get; set; } 
+        public string UserId { get; set; }
 
         [JsonIgnore]
-        [NotMapped]
         public UserViewModel? User { get; set; }
     }
 }
