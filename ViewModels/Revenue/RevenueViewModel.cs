@@ -29,13 +29,13 @@ namespace EFinnance.API.ViewModels.Revenue
         public string CategoryId { get; set; }
 
         [JsonIgnore]
-        public CategoryViewModel Category { get; set; }
+        public CategoryViewModel? Category { get; set; }
 
         [ForeignKey("User")]
         public string UserId { get; set; }
 
         [JsonIgnore]
-        public UserViewModel User { get; set; }
+        public UserViewModel? User { get; set; }
 
         public string FormatarData()
         {

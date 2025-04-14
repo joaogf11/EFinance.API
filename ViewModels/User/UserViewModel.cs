@@ -9,8 +9,8 @@ namespace EFinnance.API.ViewModels.User
 {
     public class UserViewModel : IdentityUser
     {
-        public ICollection<CategoryViewModel> Categories { get; set; }
-        public ICollection<RevenueViewModel> Revenues { get; set; }
-        public ICollection<ExpenseViewModel> Expenses { get; set; }
+        public ICollection<CategoryViewModel>? Categories { get; set; }
+        public ICollection<RevenueViewModel>? Revenues { get; set; }
+        public ICollection<ExpenseViewModel>? Expenses { get; set; }
     }
 }

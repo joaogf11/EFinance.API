@@ -1,6 +1,7 @@
 ﻿using EFinnance.API.ViewModels.User;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 
 namespace EFinnance.API.ViewModels.Category
@@ -12,7 +13,6 @@ namespace EFinnance.API.ViewModels.Category
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [Required]
-        [StringLength(50)]
         public string Title { get; set; }
 
         [Required]
@@ -23,7 +23,6 @@ namespace EFinnance.API.ViewModels.Category
         public string UserId { get; set; }
 
         [JsonIgnore]
-        public UserViewModel User { get; set; }
-
+        public UserViewModel? User { get; set; }
     }
 }

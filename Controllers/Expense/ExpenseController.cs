@@ -34,6 +34,12 @@ namespace EFinnance.API.Controllers
                 return Unauthorized();
             }
 
+            var user = await _currentUserService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("Usuario não encontrado");
+            }
+
             var expenses = await _context.Expenses
                 .Where(e => e.UserId == userId)
                 .Include(e => e.Category)
@@ -43,7 +49,8 @@ namespace EFinnance.API.Controllers
                     Value = e.Value,
                     DueDate = e.DueDate,
                     CategoryId = e.CategoryId,
-                    UserId = e.UserId
+                    UserId = userId,
+                    User = user
                 })
                 .ToListAsync();
 
