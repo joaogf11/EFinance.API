@@ -53,7 +53,7 @@ namespace EFinnance.API.Controllers.Category
                 })
                 .ToListAsync();
 
-            return Ok($"{categories.Select(s=>s.Id)}, {categories}");
+            return Ok(categories);
         }
 
         [HttpPost("new-category")]
