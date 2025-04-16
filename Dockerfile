@@ -22,6 +22,7 @@ ENV ASPNETCORE_URLS=http://+:80;http://+:5000
 ENV ASPNETCORE_ENVIRONMENT=Development
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 # Garante que o app.db é copiado para o contêiner
 COPY --from=build /app/app.db /app/app.db
