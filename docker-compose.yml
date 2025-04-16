@@ -7,9 +7,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
+      - "8080:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5000
     volumes:
       - ./app.db:/app/app.db
     networks:

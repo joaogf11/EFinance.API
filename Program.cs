@@ -13,7 +13,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("http://localhost:3000")
+        builder.WithOrigins("http://localhost", "http://localhost:80")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
@@ -38,7 +38,7 @@ builder.Services
     .AddDefaultTokenProviders()
     .AddSignInManager<SignInManager<UserViewModel>>();
 
-// Configuração de Autenticação
+// ConfiguraÃ§Ã£o de AutenticaÃ§Ã£o
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

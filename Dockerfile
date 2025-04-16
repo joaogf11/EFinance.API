@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+WORKDIR /app
 
 # Copy csproj and restore dependencies
 COPY ["EFinnance.API.csproj", "./"]
@@ -18,9 +18,16 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # Set environment variables
-ENV ASPNETCORE_URLS=http://+:5000
-ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://+:80;http://+:5000
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 
+# Garante que o app.db é copiado para o contêiner
+COPY --from=build /app/app.db /app/app.db
+RUN chmod 644 /app/app.db
+
+EXPOSE 80
 EXPOSE 5000
 
 ENTRYPOINT ["dotnet", "EFinnance.API.dll"] 
