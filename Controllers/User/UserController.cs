@@ -20,7 +20,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserViewModel>> GetUser(int id)
+    public async Task<ActionResult<UserViewModel>> GetUser(string id)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null)

@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+    volumes:
+      - ./app.db:/app/app.db
+    networks:
+      - efinance-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../EFinance.Site
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+    networks:
+      - efinance-network
+    restart: unless-stopped
+
+networks:
+  efinance-network:
+    driver: bridge 
