@@ -69,6 +69,7 @@ namespace EFinnance.API.Controllers.Category
             }
 
             var user = await _currentUserService.GetUserByIdAsync(userId);
+
             if (user == null)
             {
                 return NotFound("Usuario não encontrado");

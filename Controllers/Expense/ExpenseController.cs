@@ -13,13 +13,16 @@ namespace EFinnance.API.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ICategoryService _categoryService;
 
         public ExpenseController(
             AppDbContext context,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            ICategoryService categoryService)
         {
             _context = context;
             _currentUserService = currentUserService;
+            _categoryService = categoryService;
         }
 
         [HttpGet("get-expense")]
@@ -75,11 +78,19 @@ namespace EFinnance.API.Controllers
                 return NotFound("Usuario não encontrado");
             }
 
+            var category = await _categoryService.GetByIdAsync(viewModel.CategoryId);
+
+            if (category == null)
+            {
+                return NotFound("Categoria inválida");
+            }
+
             var expenseEntity = new ExpenseViewModel
             {
                 Value = viewModel.Value,
                 DueDate = viewModel.DueDate,
-                CategoryId = viewModel.CategoryId,
+                CategoryId = category.Id,
+                Category = category,
                 UserId = userId,
                 User = user
             };

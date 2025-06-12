@@ -13,13 +13,17 @@ namespace EFinnance.API.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ICategoryService _categoryService;
+
 
         public RevenueController(
             AppDbContext context,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            ICategoryService categoryService)
         {
             _context = context;
             _currentUserService = currentUserService;
+            _categoryService = categoryService;
         }
 
         [HttpGet("get-revenue")]
@@ -77,6 +81,11 @@ namespace EFinnance.API.Controllers
                 return NotFound("Usuario não encontrado");
             }
 
+            var category = await _categoryService.GetByIdAsync(viewModel.CategoryId);
+            if(category == null)
+            {
+                return NotFound("Categoria inválida");
+            }
             var revenueEntity = new RevenueViewModel
             {
                 Salary = viewModel.Salary,

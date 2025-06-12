@@ -24,14 +24,24 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
         var user = new UserViewModel { UserName = model.Username, Email = model.Email, PhoneNumber = model.Phone };
-        var result = await _userManager.CreateAsync(user, model.Password);
+        if (_userManager.FindByEmailAsync(user.Email) != null)
+        {
+            return BadRequest(new { erros = "Email já cadastrado!" });
+        }
+        if(model.Phone.Length > 11)
+        {
+            return BadRequest(new { erros = "Telefone Inválido! Somente números! (1199999999)" });
+        }
 
+        var result = await _userManager.CreateAsync(user, model.Password);
+        
         if (result.Succeeded)
         {
             return Ok(new { message = "Usuário registrado com sucesso!" });
         }
 
-        return BadRequest(result.Errors);
+        var errosTraduzidos = TraduzirErros(result.Errors);
+        return BadRequest(new { erros = errosTraduzidos });
     }
 
     [HttpPost("login")]
@@ -76,6 +86,37 @@ public class AuthController : ControllerBase
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
         return tokenHandler.WriteToken(token);
+    }
+
+    private List<string> TraduzirErros(IEnumerable<IdentityError> erros)
+    {
+        var lista = new List<string>();
+
+        foreach (var erro in erros)
+        {
+            var descricao = erro.Description;
+
+            if (descricao.Contains("is already taken"))
+                lista.Add("Este nome de usuário já está em uso.");
+            else if (descricao.Contains("Passwords must have at least one non alphanumeric character"))
+                lista.Add("A senha deve conter ao menos um caractere especial.");
+            else if (descricao.Contains("Passwords must have at least one uppercase"))
+                lista.Add("A senha deve conter ao menos uma letra maiúscula.");
+            else if (descricao.Contains("Passwords must have at least one lowercase"))
+                lista.Add("A senha deve conter ao menos uma letra minúscula.");
+            else if (descricao.Contains("Passwords must have at least one digit"))
+                lista.Add("A senha deve conter ao menos um número.");
+            else if (descricao.Contains("Passwords must be at least"))
+                lista.Add("A senha é muito curta.");
+            else if (descricao.Contains("is invalid"))
+                lista.Add("Campo inválido.");
+            else if (descricao.Contains("is already associated with an account"))
+                lista.Add("Este e-mail já está associado a uma conta.");
+            else
+                lista.Add(descricao); 
+        }
+
+        return lista;
     }
 
 }
